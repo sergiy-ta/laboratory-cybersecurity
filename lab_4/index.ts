@@ -3,28 +3,50 @@ const M_array: number[] = [3, 1, 2];
 const C_array: number[] = encrypt(M_array, keys);
 const M_array_decrypt: number[] = decrypt(C_array, keys);
 
-function findEandD(): { n :number, e: number, d: number } {
-    const p: number = 5;
-    const q: number = 3;
-    const n: number = p * q;
-    const w = () => (p - 1) * (q - 1);
-    const e = () => Math.floor(Math.random() * (w() - 1) + 1);
-    const e_number: number = e();
-    const d = () => {
-        function d1(): number {
-            let mod: number = 1 % w();
-            let d: number = 0;
-            while ((e_number * d) % w() !== mod) d++;
-            return d;
-        }
-
-        return d1() < n ? d1() : undefined;
+function isPrime(number: number): boolean {
+    if (number === 2 || number === 3 || number === 5) {
+        return true;
     }
-    return {
-        n: n,
-        e: e_number,
-        d: d()
-    };
+
+    if (number === 1 || number % 2 === 0 || number % 3 === 0 || number % 5 === 0) {
+        return false;
+    }
+
+    for (let i: number = 7; i <= number / 2; i+=2) {
+        if (number % i === 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function findEandD(): { n :number, e: number, d: number } {
+    const p: number = 23;
+    const q: number = 31;
+    if (isPrime(p) && isPrime(q)) {
+        const n: number = p * q;
+        const w = () => (p - 1) * (q - 1);
+        const e = () => Math.floor(Math.random() * (w() - 1) + 1);
+        const e_number: number = e();
+        const d = () => {
+            function d1(): number {
+                let mod: number = 1 % w();
+                let d: number = 0;
+                while ((e_number * d) % w() !== mod) d++;
+                return d;
+            }
+
+            return d1() < n ? d1() : undefined;
+        }
+        return {
+            n: n,
+            e: e_number,
+            d: d()
+        };
+    } else {
+        console.log("Числа p і q повинні бути простими");
+    }
 }
 
 function encrypt(M_array: number[], keys: { n: number, e: number, d: number }): number[] {
