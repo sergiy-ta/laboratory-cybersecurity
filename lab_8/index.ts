@@ -1,36 +1,37 @@
-// It's message
-const M: bigint[] = [3n,1n,2n];
+//It's function for find random number
+function getRandomIntNumber(max: number = 1000000, min: number = 10000): number {
+    return Math.floor(Math.random() * (max - min) + min);
+}
 
-// It's encrypt message
-const H: bigint[] = [6n];
+// It's function for get prime number
+function getTwoPrimeNumber(): Promise<{p: bigint, q: bigint}> {
+    return new Promise<{p: bigint, q: bigint}>(resolve => {
+        let p: bigint;
+        let q: bigint;
 
-// It's two mutually prime numbers
-const p: bigint = 1036n;
-const q: bigint = 1005n;
-
-// It's secret key
-const x: bigint = 8n;
-
-// It's open key
-const y: bigint = (q ** x) % p;
-
-// It's product two mutually prime numbers
-const n: bigint = p * q;
-
-// It's hash value
-const m1: bigint = findM1();
+        do {
+            p = BigInt(getRandomIntNumber());
+            q = BigInt(getRandomIntNumber(parseInt((p - 1n).toString())));
+            if (isTwoPrime(p, q)) resolve({p, q});
+        } while (!isTwoPrime(p, q));
+    });
+}
 
 // It's function for find hash value
-function findM1() {
-    for (let i: number = 0; i < M.length; i++) {
-        H[i + 1] = ((M[i] + H[i]) ** 2n) % n;
+function findM1(text: string, H: bigint[], n: bigint): bigint {
+    for (let i = 0; i < text.length; i++) {
+        let m: bigint = BigInt(text.charCodeAt(i));
+
+        H[i + 1] = findH(m, H[i], n);
     }
 
     return H[H.length - 1];
 }
 
-// It's random number with GCD(Greatest common divisor) = 1
-const k: bigint = findK(p);
+// It's function for find number H
+function findH(M: bigint, H: bigint, n: bigint): bigint {
+    return ((M + H) ** 2n) % n;
+}
 
 // It's function for finad number K
 function findK(p: bigint): bigint {
@@ -68,14 +69,8 @@ function isTwoPrime(number1: bigint, number2: bigint): boolean | void {
     }
 }
 
-// It's signature element a
-const a: bigint = (q ** k) % p;
-
-// It's signature element b
-const b: bigint = findB();
-
 // It's function for find signature element b
-function findB(): bigint {
+function findB(x: bigint, a: bigint, k: bigint, p: bigint, m1: bigint): bigint {
     let b: bigint = 1n;
 
     while(((x * a) + (k * b)) % (p - 1n) !== m1 % (p - 1n)) {
@@ -85,19 +80,54 @@ function findB(): bigint {
     return b;
 }
 
-// It's functional Euler
-const w: bigint = (p - 1n) * (q - 1n);
-
-// It's digital signature
-const S: bigint = (m1 ** x) % n;
-
-// It's hash value
-const m2: bigint = (S ** y) % n;
-
 // It's function for algorithm verificate
-function verificate() {
+function verificate(y: bigint, a: bigint, b: bigint, p: bigint, q: bigint, m2: bigint) {
     console.log(`Успішно: ${((y ** a) * (a ** b)) % p === (q ** m2) % p}`);
 }
 
-// Run the function
-verificate();
+
+async function run() {
+    // It's message
+    const text: string = "Text";
+
+    // It's encrypt message
+    const H: bigint[] = [6n];
+
+    // It's two mutually prime numbers
+    const { p, q } = await getTwoPrimeNumber();
+
+    // It's secret key
+    const x: bigint = BigInt(getRandomIntNumber(parseInt((p-1n).toString()), 2));
+
+    // It's open key
+    const y: bigint = (q ** x) % p;
+
+    // It's product two mutually prime numbers
+    const n: bigint = p * q;
+
+    // It's hash value
+    const m1: bigint = findM1(text, H, n);
+
+    // It's random number with GCD(Greatest common divisor) = 1
+    const k: bigint = findK(p);
+
+    // It's signature element a
+    const a: bigint = (q ** k) % p;
+
+    // It's signature element b
+    const b: bigint = findB(x, a, k, p, m1);
+
+    // It's functional Euler
+    const w: bigint = (p - 1n) * (q - 1n);
+
+    // It's digital signature
+    const S: bigint = (m1 ** x) % n;
+
+    // It's hash value
+    const m2: bigint = (S ** y) % n;
+
+    // Run the function
+    verificate(y, a, b, p, q, m2);
+}
+
+run();
