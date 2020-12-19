@@ -1,13 +1,18 @@
 // import class Function
 import Function from './function';
-// import table G
-import { G } from './const';
-
 export default class Key {
     private K1: string;
     private K2: string;
 
+    // It's table G
+    private G: number[][] = [];
+
     constructor() {
+        let G1: number[] = Function.rundomNumberList(15, 7, [8]);
+        let G2: number[] = Function.rundomNumberList(15, 7, [8, ...G1]);
+
+        this.G = [G1, G2];
+
         let k: [string, string] = [String.fromCharCode(Function.getRandomIntNumber()), String.fromCharCode(Function.getRandomIntNumber())];
         let ANCII: [string, string] = this.findASCII(k);
         
@@ -31,8 +36,8 @@ export default class Key {
         let K: string = ANCII1 + ANCII2;
 
         // It's C0 and D0
-        let C0: string = Function.findC0(K, G);
-        let D0: string = Function.findD0(K, G);
+        let C0: string = Function.findC0(K, this.G);
+        let D0: string = Function.findD0(K, this.G);
 
         // It's C1 and D1
         let C1: string = Function.permutationOfBitsLeft(C0,1);

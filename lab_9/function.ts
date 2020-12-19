@@ -1,16 +1,74 @@
-import { H, alphabet, permution_table, E, S, P, IP } from './const';
+import { alphabet, permution_table } from './const';
 
 export default class Function {
+    // It's table H
+    private  static H: number[] = Function.rundomNumberList(14, 12);
+
+    // It's table P
+    private static P: number[] = Function.rundomNumberList(8);
+
+    // It's table function E
+    private static E: number[] = Function.rundomNumberList(8, 12);
+
+    // It's table for permution S
+    private static S: number[][][] = [
+        [
+            Function.rundomNumberList(16),
+            Function.rundomNumberList(16),
+            Function.rundomNumberList(16),
+            Function.rundomNumberList(16),
+        ],
+        [
+            Function.rundomNumberList(16),
+            Function.rundomNumberList(16),
+            Function.rundomNumberList(16),
+            Function.rundomNumberList(16),
+        ]
+    ];
+
+    // It's table for reverse permution IP
+    public static IP: number[] = [11,3,15,7,10,2,14,6,9,1,13,5,8,0,12,4];
+
+    constructor() { }
     // It's function get random number
     public static getRandomIntNumber(max: number = 128, min: number = 1): number {
         return Math.floor(Math.random() * (max - min) + min);
     }
 
+    // It's function get random number list
+    public static rundomNumberList(maxNumber: number, number: number = maxNumber, array_2: number[] = []): number[] {
+        let array: number[] = [Function.getRandomIntNumber(maxNumber)];
+        let repeted: number = number > maxNumber ? number - maxNumber : 0;
+        let repeted_number: number = 0;
+        for (let i: number = 0; i < number - 1; i++) {
+            let rundomNumber: number;
+            if (i !== number - 2) {
+                do {
+                    rundomNumber = Function.getRandomIntNumber(maxNumber);
+                    if(!array.includes(rundomNumber) && repeted_number <= repeted && !array_2.includes(rundomNumber)) {
+                        if (repeted_number < repeted) repeted_number++;
+                        array.push(rundomNumber);
+                        break;
+                    }
+                } while((array.includes(rundomNumber) && repeted_number < repeted) || array_2.includes(rundomNumber));
+            } else {
+                for (let i: number = 0; i < maxNumber; i++) {
+                    if (!array.includes(i) && !array_2.includes(i)) {
+                        repeted_number++;
+                        array.push(i);
+                        break;
+                    }
+                }
+            }
+        }
+        return array;
+    }
+
     // It's function for get K
     public static getK(CD: string): string {
         let T0: string[] = [];
-        for (let i: number = 0; i < H.length; i++) {
-            T0.push(CD[H[i]]);
+        for (let i: number = 0; i < Function.H.length; i++) {
+            T0.push(CD[Function.H[i]]);
         }
         return T0.join('');
     }
@@ -77,8 +135,8 @@ export default class Function {
     // It's function for find E
     public static getE(R: string): string {
         let ER: string[] = [];
-        for (let i: number = 0; i < E.length; i++) {
-            ER.push(R[E[i]]);
+        for (let i: number = 0; i < Function.E.length; i++) {
+            ER.push(R[Function.E[i]]);
         }
         return ER.join('');
     }
@@ -114,7 +172,7 @@ export default class Function {
         let first: number = parseInt(parseInt(number[0] + number[5], 2).toString());
         let second: number = parseInt(parseInt(number[1] + number[2] + number[3] + number[4], 2).toString());
     
-        return S[index][first][second].toString(2);
+        return Function.S[index][first][second].toString(2);
     }
 
     // It's function for get S1B1, S2B2
@@ -154,7 +212,7 @@ export default class Function {
     public static useP(Y: string): string {
         let number: string[] = [];
         for (let i: number = 0; i < Y.length; i++) {
-            number.push(Y[P[i]]);
+            number.push(Y[Function.P[i]]);
         }
         return number.join('');
     }
@@ -163,7 +221,7 @@ export default class Function {
     public static inverceUseP(decrypt_code: string): string {
         let number: string[] = [];
         for (let i: number = 0; i < decrypt_code.length; i++) {
-            number[IP[i]] = decrypt_code[i];
+            number[Function.IP[i]] = decrypt_code[i];
         }
         return number.join('');
     }
@@ -171,8 +229,8 @@ export default class Function {
     // It's function for get new string from table IP
     public static getIP(RL: string): string {
         let text: string[] = [];
-        for (let i: number = 0; i < IP.length; i++) {
-            text.push(RL[IP[i]]);
+        for (let i: number = 0; i < Function.IP.length; i++) {
+            text.push(RL[Function.IP[i]]);
         }
         return text.join('');
     }
